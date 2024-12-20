@@ -1,28 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Search Results</title>
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <style>
+    </style>
 </head>
 <body>
     <h1>Search Results</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Username</th>
-                <th>Comment</th>
-                <th>Date</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for result in results %}
-            <tr>
-                <td>{{ result.username }}</td>
-                <td>{{ result.comment }}</td>
-                <td>{{ result.date }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <form method="post" action="/">
+        <label for="query">Search:</label>
+        <input type="text" id="query" name="query" value="{{ query or 'nvidia' }}" required>
+        <button type="submit">Search</button>
+    </form>
+
+    {% if results %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Comment</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result in results %}
+                <tr>
+                    <td>{{ result.username }}</td>
+                    <td>{{ result.comment }}</td>
+                    <td>{{ result.date }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No results found.</p>
+    {% endif %}
+
+    {% if error %}
+        <p style="color: red;">Error: {{ error }}</p>
+    {% endif %}
 </body>
 </html>
