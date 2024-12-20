@@ -1,4 +1,6 @@
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 from elasticsearch import Elasticsearch
 from typing import Optional, List
 
@@ -12,11 +14,13 @@ es = Elasticsearch(
 
 app = FastAPI()
 
+templates = Jinja2Templates(directory="templates")
+
 #to run this, navigate to the root (wsb-elastc-fastapi) in terminal
 # uvicorn main:app --reload
 #returns a raw string that matches the hit of the query
 @app.get("/search/")
-async def search(query: str | str = "nvidia"): #this passes the required string or makes the default /search/?query=nvidia
+async def search(request: Request, query: str | str = "nvidia"): #this passes the required string or makes the default /search/?query=nvidia
 #async def search(query: Optional[str] = Query(None)): #this defaults to an empty query /search/?query=None
 
     #this can be used to define the query within the function
@@ -52,11 +56,16 @@ async def search(query: str | str = "nvidia"): #this passes the required string 
                 date=source["date"]
             )
             results.append(comment_data)
-
+        """
         return {
             "message": f"Got {hits} hits",
             "results": [result.to_dict() for result in results]
-        }
+        }"""
+        return templates.TemplateResponse("table.html",{
+            "request": request,
+            "results": results
+        })
+
     except Exception as e:
         return {"error": str(e)}
 
